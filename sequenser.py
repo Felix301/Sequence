@@ -1,6 +1,6 @@
 import sys
 import socket
-from threading import Thread
+import threading
 import thread
 import pickle
 import os
@@ -23,35 +23,33 @@ client_address3 =('', int(sys.argv[3]))
 client_address4 =('', int(sys.argv[4]))
 client={1:client_address1,2:client_address2,3:client_address3,4:client_address4}
 
+'''    I currently don't know how to get the ip address when recevie the message, maybe you can include that inside the message?
+    I type the code if can get the ip address
+client=set()      
+'''
 
 print("Sequenser start running")
-'''
-def init():
-    global socket_server
-    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)  # 创建 socket 对象
-    server.bind(ADDRESS)
-    server.listen(4)
 
-
-def accept_client():
-    while True:
-        client, _ = server.accept()  
-        g_conn_pool.append(client)
-        thread = Thread(target=receive_message, args=(client,))
-        thread.setDaemon(True)
-        thread.start()
-'''
 def wrap_message(message,seq_num,sender_id):
     dict = {"message_contents": message, "seq_num": seq_num,"sender_id": sender_id}
     return pickle.dumps(dict)
 
 def send_message(message,seq_num,sender_id):
-    #server.sendall(wrap_message(message,seq_num)
     for n in client:
         server.sendto(wrap_message(message,seq_num,sender_id), client[n])
+        ''' when useing add address when receving instead of initializion
+        server.sendto(wrap_message(message,seq_num,sender_id), n)'''
+        
     
-
 def receive_message(message_from_client):
+    thread = threading.Thread(target = run, args=(message_from_client,))
+    ''' add address when receving instead of initializion
+    if (client ipaddress) not in client: 
+        client.add(client ipaddress)
+    '''
+    thread.start() 
+
+def run(message_from_client):
     global Vclock
     global sequence
     delay=random.random()*5  
@@ -71,25 +69,19 @@ def receive_message(message_from_client):
                         send_message(n["message_contents"],sequence+1,+message_from_client["sender_id"])
                         Vclock[message_from_client["seq_num"]]+=1
                         sequence+=1
-                        check-=len(hold_back_list.remove)
+                        check-=len(hold_back_list)
                         hold_back_list.remove(n)
         
     else:
         hold_back_list.append(message_from_client)
         
 if __name__ == '__main__':
-    '''
-    init()
-    thread = Thread(target=accept_client)
-    thread.setDaemon(True)
-    thread.start()
-    while True:
-        cmd = input("""--------------------------
-input 1 to check current connection
-""")
-        if cmd == '1':
-            print("--------------------------")
-            print("当前在线人数：", len(g_conn_pool))
-            '''
     message,address = server.recvfrom(1024)
     receive_message(pickle.load(message))
+    
+    
+    
+    
+    
+    
+    
