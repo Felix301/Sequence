@@ -49,6 +49,7 @@ def run(message_from_client):
         send_message(message_from_client["message_contents"],sequence,+message_from_client["sender_id"])
         check=-1
         while (check < 0):
+            check+=1
             for n in hold_back_list:
                 check+=1
                 if (message_from_client["sender_id"] == n["sender_id"]):
@@ -57,6 +58,7 @@ def run(message_from_client):
                         print("send message:%s with sequence:%d,sender_id:%d localclock:%d"%(n["message_from_client"],sequence+1,n["sender_id"],n["local_clock"]))
                         Vclock[message_from_client["sender_id"]]+=1
                         sequence+=1
+                        check-=1
                         check-=len(hold_back_list)
                         hold_back_list.remove(n)
         
