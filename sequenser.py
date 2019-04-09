@@ -7,7 +7,7 @@ import os
 import random
 import time
 
-Vclock={1:0,2:0,3:0,4:0}
+Vclock={}
 sequence=0
 hold_back_list = []
 
@@ -34,6 +34,7 @@ def receive_message(message_from_client,address):
     #add address when receving instead of initializion
     if address not in client: 
         client.add(address)
+        Vclock[message_from_client["sender_id"]]=0
     thread.start() 
 
 def run(message_from_client):
